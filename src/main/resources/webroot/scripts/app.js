@@ -55,7 +55,7 @@
 			$rootScope, $websocket, $location) {
 		var controller = this;
 		$log.debug("AppHomeController...");
-		$http.get('http://localhost:9000/Services/rest/blogs').success(
+		$http.get('http://vm-amitaga-001:7000/Services/rest/blogs').success(
 				function(data, status, headers, config) {
 					$scope.blogs = data;
 					$scope.loading = false;
@@ -64,7 +64,7 @@
 					$scope.error = status;
 				});
 		var ws=null;
-		$http.get('http://localhost:9000/Services/rest/user?signedIn=true').success(
+		$http.get('http://vm-amitaga-001:7000/Services/rest/user?signedIn=true').success(
 				function(data, status, headers, config) {
 					$scope.connectedUsers = data;
 					$scope.loading = false;
@@ -114,7 +114,7 @@
 					$scope.error = status;
 				});
 			$scope.tagSearch = function(){
-				$http.get('http://localhost:9000/Services/rest/blogs?tag='+$scope.searchTag).success(
+				$http.get('http://vm-amitaga-001:7000/Services/rest/blogs?tag='+$scope.searchTag).success(
 					function(data, status, headers, config) {
 						$scope.blogs = data;
 						$scope.loading = false;
@@ -126,7 +126,7 @@
 			$scope.submitComment = function(comment, blogId){
 				$log.debug(comment);
 				//var blogId = comment.blogId;
-				$http.post('http://localhost:9000/Services/rest/blogs/'+blogId+'/comments',comment).success(
+				$http.post('http://vm-amitaga-001:7000/Services/rest/blogs/'+blogId+'/comments',comment).success(
 					function(data, status, headers, config) {
 						$scope.loading = false;
 						for(var index in $scope.blogs){
@@ -154,7 +154,7 @@
 	app.controller('LoginController', function($http, $log, $scope, $location, $rootScope) {
 		var controller = this;
 		$scope.isLoadingCompanies = true;
-		$http.get('http://localhost:9000/Services/rest/company').success(
+		$http.get('http://vm-amitaga-001:7000/Services/rest/company').success(
 				function(data, status, headers, config) {
 					$scope.companies = data;
 					$scope.isLoadingCompanies = false;
@@ -164,7 +164,7 @@
 				});
 		$scope.login = function(user) {
 			$log.debug("Logging in user...");
-			$http.post("http://localhost:9000/Services/rest/user/auth", user).success(
+			$http.post("http://vm-amitaga-001:7000/Services/rest/user/auth", user).success(
 					function() {
 						$rootScope.loggedIn = true;
 						$location.path("/");
@@ -176,7 +176,7 @@
 		};
 		$scope.submitRegister = function(user){
 			$log.debug("Registering...");
-			$http.post("http://localhost:9000/Services/rest/user/register", user).success(
+			$http.post("http://vm-amitaga-001:7000/Services/rest/user/register", user).success(
 					function(data) {
 						$log.debug(data);
 						$location.path("/");
@@ -185,7 +185,7 @@
 		$scope.companyChange = function(companyId) {
 			$log.debug("Loading sites for company: " + companyId);
 			// Load sites
-			$http.get('http://localhost:9000/Services/rest/company/'+companyId+'/sites').success(
+			$http.get('http://vm-amitaga-001:7000/Services/rest/company/'+companyId+'/sites').success(
 					function(data, status, headers, config) {
 						$scope.sites = data;
 						$scope.isLoadingSites = false;
@@ -198,7 +198,7 @@
 		$scope.siteChange = function(companyId, siteId) {
 			$log.debug("Loading departments: " + companyId);
 			// Load sites
-			$http.get('http://localhost:9000/Services/rest/company/'+companyId+'/sites/'+siteId+'/departments').success(
+			$http.get('http://vm-amitaga-001:7000/Services/rest/company/'+companyId+'/sites/'+siteId+'/departments').success(
 					function(data, status, headers, config) {
 						$scope.departments = data;
 						$scope.isLoadingDepts = false;
@@ -227,7 +227,7 @@
 				$scope.blog={};
 				$scope.blog.content = 'Blog text here...';
 				$scope.saveBlog = function(blog){
-					$http.post("http://localhost:9000/Services/rest/blogs", blog).success(
+					$http.post("http://vm-amitaga-001:7000/Services/rest/blogs", blog).success(
 							function() {
 								$log.debug("Saved blog...");
 								$location.path("/");

@@ -8,7 +8,7 @@ ENV VERTICLE_FILE target/cmad-ms-gui-1.0.0-SNAPSHOT.jar
 # Set the location of the verticles
 ENV VERTICLE_HOME /usr/verticles
 
-EXPOSE 9090
+EXPOSE 7000
 
 # Copy your verticle to the container                   
 COPY $VERTICLE_FILE $VERTICLE_HOME/

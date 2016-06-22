@@ -14,7 +14,7 @@ public class GUIVerticle extends AbstractVerticle {
 
 	public static final int DEFAULT_WORKER_POOL_SIZE = 10;
 	public static final String VERTICLE_NAME = GUIVerticle.class.getName();
-	public static final int HTTP_PORT = 9000;
+	public static final int HTTP_PORT = 7000;
 	
 	@Override
 	public void start(Future<Void> startFuture)

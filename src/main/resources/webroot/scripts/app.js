@@ -83,17 +83,17 @@
 			        		 //Add this user to list of users
 			        		 var found = false;
 			        		 for(var index in $scope.connectedUsers){
-			        			 if($scope.connectedUsers[index].id==data.messageObject.id){
+			        			 if($scope.connectedUsers[index].id==data.id){
 			        				 found=true;
 			        			 }
 			        		 }
 			        		 if(!found){
-			        			 $log.debug("Adding user to list: "+data.messageObject.first);
+			        			 $log.debug("Adding user to list: "+data.first);
 			        			 $scope.connectedUsers.push(data.messageObject);
 			        			 $scope.$digest();
 			        		 }
 			        	 }else if(data.messageType==="chatMessage"){
-			        		 //Make sure chat window opensup
+			        		 //Make sure chat window opens up
 			        		 $scope.showChat=true
 			        		 $log.debug("Updating chat message: ");
 			        		 $log.debug(data.messageObject);

@@ -47,14 +47,31 @@
 		// Http Intercpetor to check auth failures for xhr requests
 		$httpProvider.interceptors.push('authHttpResponseInterceptor');
 	} ]);
+	
+	 app.factory('userData', function() {
+		 var _user = {
+			userName: "",
+			password: ""	 
+		 };
+		 
+	     return {
+			getUser : function() {
+				return _user;
+			},
+			setUser : function(u) {
+				_user = u;
+			}
+		};
+	 });
 
-	//------------------------------------------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------------------------------------------
 	// Controller for the home page with blogs and live users
 	//------------------------------------------------------------------------------------------------------------------
 	app.controller('AppHomeController', function($http, $log, $scope,
-			$rootScope, $websocket, $location) {
+			$rootScope, $websocket, $location, userData) {
 		var controller = this;
 		$log.debug("AppHomeController...");
+		var $rootScope.globals.currentUser = userData.getUser();
 		$http.get('http://vm-amitaga-001:7000/Services/rest/blogs').success(
 				function(data, status, headers, config) {
 					$scope.blogs = data;
@@ -64,7 +81,14 @@
 					$scope.error = status;
 				});
 		var ws=null;
-		$http.get('http://vm-amitaga-001:7000/Services/rest/user?signedIn=true').success(
+		var blogReq = {
+				method: 'GET',
+				url: 'http://vm-amitaga-001:7000/Services/rest/blogs',
+				headers: {
+					'Authorization': btoa($rootScope.globals.currentUser.userName + ":" + $rootScope.globals.currentUser.password)
+				}
+		};
+		$http.get(blogReq).success(
 				function(data, status, headers, config) {
 					$scope.connectedUsers = data;
 					$scope.loading = false;
@@ -114,7 +138,14 @@
 					$scope.error = status;
 				});
 			$scope.tagSearch = function(){
-				$http.get('http://vm-amitaga-001:7000/Services/rest/blogs?tag='+$scope.searchTag).success(
+				var tagReq = {
+						method: 'GET',
+						url: 'http://vm-amitaga-001:7000/Services/rest/blogs?tag='+$scope.searchTag,
+						headers: {
+							'Authorization': btoa($rootScope.globals.currentUser.userName + ":" + $rootScope.globals.currentUser.password)
+						}
+				};
+				$http.get(tagReq).success(
 					function(data, status, headers, config) {
 						$scope.blogs = data;
 						$scope.loading = false;
@@ -125,8 +156,15 @@
 			};
 			$scope.submitComment = function(comment, blogId){
 				$log.debug(comment);
-				//var blogId = comment.blogId;
-				$http.post('http://vm-amitaga-001:7000/Services/rest/blogs/'+blogId+'/comments',comment).success(
+				var commentReq = {
+						method: 'POST',
+						url: 'http://vm-amitaga-001:7000/Services/rest/blogs/'+blogId+'/comments',comment,
+						headers: {
+							'Authorization': btoa($rootScope.globals.currentUser.userName + ":" + $rootScope.globals.currentUser.password)
+						},
+						data: comment
+				};
+				$http.post(commentReq).success(
 					function(data, status, headers, config) {
 						$scope.loading = false;
 						for(var index in $scope.blogs){
@@ -151,7 +189,7 @@
 	//------------------------------------------------------------------------------------------------------------------
 	// Controller for the login view and the registration screen
 	//------------------------------------------------------------------------------------------------------------------
-	app.controller('LoginController', function($http, $log, $scope, $location, $rootScope) {
+	app.controller('LoginController', function($http, $log, $scope, $location, $rootScope, userData) {
 		var controller = this;
 		$scope.isLoadingCompanies = true;
 		$http.get('http://vm-amitaga-001:7000/Services/rest/company').success(
@@ -164,7 +202,23 @@
 				});
 		$scope.login = function(user) {
 			$log.debug("Logging in user...");
-			$http.post("http://vm-amitaga-001:7000/Services/rest/user/auth", user).success(
+			$rootScope.globals = {
+					currentUser:{
+						userName: user.userName,
+						password: user.password
+					}
+				userData.setUser($rootScope.globals.currentUser);
+			};
+			
+			var loginReq	 = {
+					method: 'POST',
+					url: 'http://vm-amitaga-001:7000/Services/rest/user/auth',
+					headers: {
+						'Authorization': btoa(user.userName + ":" + user.password)
+					},
+					data: user
+			};
+			$http.post(loginReq).success(
 					function() {
 						$rootScope.loggedIn = true;
 						$location.path("/");
@@ -221,13 +275,21 @@
 	//------------------------------------------------------------------------------------------------------------------
 	// Controller for new blog post view
 	//------------------------------------------------------------------------------------------------------------------
-	app.controller('BlogController',function($http, $log, $scope, $location) {
+	app.controller('BlogController',function($http, $log, $scope, $location, userData) {
 				var controller = this;
 				$log.debug("Blog controller...");
 				$scope.blog={};
 				$scope.blog.content = 'Blog text here...';
 				$scope.saveBlog = function(blog){
-					$http.post("http://vm-amitaga-001:7000/Services/rest/blogs", blog).success(
+					var blogReq = {
+							method: 'POST',
+							url: 'http://vm-amitaga-001:7000/Services/rest/blogs'+
+							headers: {
+								'Authorization': btoa($rootScope.globals.currentUser.userName + ":" + $rootScope.globals.currentUser.password)
+							},
+							data: blog
+					};
+					$http.post(blogReq).success(
 							function() {
 								$log.debug("Saved blog...");
 								$location.path("/");

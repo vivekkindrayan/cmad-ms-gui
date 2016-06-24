@@ -19,6 +19,12 @@ public class GUIVerticle extends AbstractVerticle {
 	@Override
 	public void start(Future<Void> startFuture)
 	{
+		VertxOptions options = new VertxOptions().setWorkerPoolSize(DEFAULT_WORKER_POOL_SIZE);
+		Vertx vertx = Vertx.vertx(options);
+		HttpServer server = vertx.createHttpServer();
+		Router router = Router.router(vertx);
+		router.route().handler(StaticHandler.create()::handle);	
+		server.requestHandler(router::accept).listen(HTTP_PORT);
 		System.out.println(VERTICLE_NAME + " started");
 		startFuture.complete();
 	}
